@@ -16,7 +16,9 @@
                             v-for="user in conversation.users"
                             v-bind:key="user.id"
                             >
-                            <img :src="user.get_avatar" class="w-[40px] rounded-full" alt="">
+                            <div v-if="user.id !== userStore.user.id">
+                                <img :src="user.get_avatar" class="w-[40px] rounded-full" alt="">
+                            </div>
                                 <p
                                 class="text-xs font-bold"
                                 v-if="user.id !== userStore.user.id"
