@@ -29,7 +29,7 @@
                     
                   </template>
                 </div>
-                <div class="mr-5" v-if="conversation.newMessagesCount > 0" @click="conversation.newMessagesCount = 0">
+                <div class="mr-5 bg-rose-600 px-2 text-white font-xs rounded-full" v-if="conversation.newMessagesCount > 0" @click="conversation.newMessagesCount = 0">
                   <p>{{ conversation.newMessagesCount }}</p>
                 </div>
               </div>
