@@ -188,7 +188,7 @@ methods: {
       .then(() => {
         const conversation = this.conversations.find(convo => convo.id === conversationId);
         if (conversation) {
-          conversation.unread_messages_count = 0; // Reset the unread messages count
+          conversation.unread_messages_count = 0;
         }
       })
       .catch(error => {
