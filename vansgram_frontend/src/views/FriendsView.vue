@@ -126,12 +126,9 @@ export default {
                 })
         },
         handleRequest(status, pk) {
-            console.log('handlerequest', status)
-
             axios
                 .post(`/api/friends/${pk}/${status}/`)
                 .then(response => {
-                    console.log('data', response.data)
                 })
                 .catch(error => {
                     console.log('error', error)

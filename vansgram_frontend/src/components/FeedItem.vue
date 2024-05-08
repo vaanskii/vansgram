@@ -123,7 +123,6 @@ export default {
             axios
                 .delete(`/api/posts/${this.post.id}/delete/`)
                 .then(response => {
-                    console.log(response.data)
                 })
                 .catch(error => {
                 console.log('error', error);

@@ -162,13 +162,9 @@ export default {
         },
         
         sendDirectMessage() {
-            console.log('sendmessage')
-
             axios
                 .get(`/api/chat/${this.$route.params.id}/get-or-create/`)
                 .then(response => {
-                    console.log(response.data)
-
                     this.$router.push('/chat')
                 })
                 .catch(error => {
@@ -180,8 +176,6 @@ export default {
             axios
                 .post(`/api/friends/${this.$route.params.id}/request/`)
                 .then(response => {
-                    console.log('data', response.data)
-
                     if (response.data.message == 'request already sent') {
                         this.toastStore.showToast(5000, 'The request already been sent!', 'bg-red-300')
                     }else {
@@ -208,8 +202,6 @@ export default {
         },
 
         submitForm() {
-            console.log('submitForm', this.body)
-
             let formData = new FormData()
             formData.append('image', this.$refs.file.files[0])
             formData.append('body', this.body)
@@ -222,8 +214,6 @@ export default {
                     }
                 })
                 .then(response => {
-                    console.log('data', response.data)
-
                     this.posts.unshift(response.data)
                     this.body = ''
                     this.is_private = false

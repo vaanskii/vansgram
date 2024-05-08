@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import FeedView from '../views/FeedView.vue'
 import SignupView from '../views/SignupView.vue'
 import LoginView from '../views/LoginView.vue'
@@ -16,11 +15,6 @@ import NotificationsView from '../views/NotificationsView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView
-    },
     {
       path: '/feed',
       name: 'feed',
@@ -42,9 +36,10 @@ const router = createRouter({
       component: SearchView
     },
     {
-      path: '/chat',
+      path: '/chat/:id?',
       name: 'chat',
-      component: ChatView
+      component: ChatView,
+      props: true
     },
     {
       path: '/notifications',

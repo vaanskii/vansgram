@@ -87,7 +87,6 @@ export default {
             axios
                 .get(`/api/posts/${this.$route.params.id}/`)
                 .then(response => {
-                    console.log('data', response.data)
                     this.post = response.data.post
                 })
                 .catch(error => {
@@ -96,15 +95,11 @@ export default {
         },
 
         submitForm() {
-            console.log('submitForm', this.body)
-
             axios
                 .post(`/api/posts/${this.$route.params.id}/comment/`, {
                     'body': this.body
                 }) 
                 .then(response => {
-                    console.log('data', response.data)
-
                     this.post.comments.push(response.data)
                     this.post.comments_count += 1
                     this.body = ''
