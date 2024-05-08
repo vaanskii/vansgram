@@ -22,18 +22,15 @@ class Comment(models.Model):
     def created_at_formatted(self):
         time_difference = now() - self.created_at
         days = time_difference.days
-        hours, remainder = divmod(time_difference.seconds, 3600)
-        minutes = remainder // 60
-
         if days > 0:
-            # If more than a day, show days and remaining hours
-            return f"{days} {'day' if days == 1 else 'days'} and {hours} {'hour' if hours == 1 else 'hours'} ago"
-        elif hours > 0:
-            # If less than a day but more than an hour, show hours and minutes
-            return f"{hours} {'hour' if hours == 1 else 'hours'} and {minutes} {'minute' if minutes == 1 else 'minutes'} ago"
+            return f"{days} {'day' if days == 1 else 'days'}"
         else:
-            # If less than an hour, show minutes only
-            return f"{minutes} {'minute' if minutes == 1 else 'minutes'} ago"
+            hours, remainder = divmod(time_difference.seconds, 3600)
+            minutes = remainder // 60
+            if hours > 0:
+                return f"{hours} {'hour' if hours == 1 else 'hours'}"
+            else:
+                return f"{minutes} {'minute' if minutes == 1 else 'minutes'}"
 
 
 class PostAttachment(models.Model):
@@ -74,20 +71,17 @@ class Post(models.Model):
         ordering = ['-created_at']
 
     def created_at_formatted(self):
-        time_difference = now() - self.created_at
-        days = time_difference.days
-        hours, remainder = divmod(time_difference.seconds, 3600)
-        minutes = remainder // 60
-
-        if days > 0:
-            # If more than a day, show days and remaining hours
-            return f"{days} {'day' if days == 1 else 'days'} and {hours} {'hour' if hours == 1 else 'hours'}"
-        elif hours > 0:
-            # If less than a day but more than an hour, show hours and minutes
-            return f"{hours} {'hour' if hours == 1 else 'hours'} and {minutes} {'minute' if minutes == 1 else 'minutes'}"
-        else:
-            # If less than an hour, show minutes only
-            return f"{minutes} {'minute' if minutes == 1 else 'minutes'}"
+            time_difference = now() - self.created_at
+            days = time_difference.days
+            if days > 0:
+                return f"{days} {'day' if days == 1 else 'days'}"
+            else:
+                hours, remainder = divmod(time_difference.seconds, 3600)
+                minutes = remainder // 60
+                if hours > 0:
+                    return f"{hours} {'hour' if hours == 1 else 'hours'}"
+                else:
+                    return f"{minutes} {'minute' if minutes == 1 else 'minutes'}"
         
     def __str__(self):
         return self.body

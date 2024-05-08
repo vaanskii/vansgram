@@ -2,38 +2,34 @@
   <div class="max-w-7xl mx-auto grid grid-cols-4 gap-4">
       <div class="main-left col-span-1">
           <div class="p-4 bg-white border border-gray-200 rounded-lg">
-              <h3 class="mb-6 text-xl">People you may know</h3>
+              <h3 class="mb-6 text-xl">Conversation</h3>
               
               <div class="space-y-4">
-                  <div 
-                      class="flex items-center justify-between cursor-pointer"
-                      v-for="conversation in conversations"
-                      v-bind:key="conversation.id"
-                      v-on:click="setActiveConversation(conversation.id)"
-                      >
-                      <div class="flex items-center space-x-2"> 
-                          <template 
-                          v-for="user in conversation.users"
-                          v-bind:key="user.id"
-                          >
-                          <div v-if="user.id !== userStore.user.id">
-                              <img :src="user.get_avatar" class="w-[40px] rounded-full" alt="">
-                          </div>
-                              <p
-                              class="text-xs font-bold"
-                              v-if="user.id !== userStore.user.id"
-                              >
-                              {{ user.name }} 
-                              </p>
-                          
-                          </template>
-
-                      </div>
-                      <span class="text-xs text-gray-500">{{ conversation.modified_at_formatted }}</span>
-                  </div>
-
-
+              <div 
+                class="flex items-center justify-between cursor-pointer"
+                v-for="conversation in conversations"
+                :key="conversation.id"
+                :class="{ 'bg-gray-200 rounded-l-3xl rounded-r-xl': activeConversation.id === conversation.id }"
+                @click="setActiveConversation(conversation.id)"
+              >
+                <div class="flex items-center space-x-2"> 
+                  <template 
+                    v-for="user in conversation.users"
+                    :key="user.id"
+                  >
+                    <div v-if="user.id !== userStore.user.id">
+                      <img :src="user.get_avatar" class="w-[40px] rounded-full" alt="">
+                    </div>
+                    <p
+                      class="text-xs font-bold"
+                      v-if="user.id !== userStore.user.id"
+                    >
+                      {{ user.name }} 
+                    </p>
+                  </template>
+                </div>
               </div>
+            </div>
           </div>
       </div>
 
@@ -159,7 +155,11 @@ methods: {
     axios
       .get('/api/chat/')
       .then(response => {
-        this.conversations = response.data;
+        this.conversations = response.data.sort((a, b) => {
+          const lastMessageATime = a.last_message_at ? new Date(a.last_message_at).getTime() : 0;
+          const lastMessageBTime = b.last_message_at ? new Date(b.last_message_at).getTime() : 0;
+          return lastMessageBTime - lastMessageATime;
+        });
         this.loading = false;
         this.setActiveConversationFromRoute();
       })

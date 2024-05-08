@@ -10,14 +10,17 @@ class Conversation(models.Model):
     modified_at = models.DateTimeField(auto_now = True)
 
     def modified_at_formatted(self):
-        time_difference = now() - self.created_at
-        minutes = int(time_difference.total_seconds() / 60)
+            time_difference = now() - self.created_at
+            days = time_difference.days
+            hours, _ = divmod(time_difference.seconds, 3600)
 
-        if minutes < 60:
-            return f"{minutes} {'minute' if minutes == 1 else 'minutes'}"
-        else:
-            hours = int(minutes / 60)
-            return f"{hours} {'hour' if hours == 1 else 'hours'}"
+            if days > 0:
+                return f"{days} {'day' if days == 1 else 'days'} ago"
+            elif hours > 0:
+                return f"{hours} {'hour' if hours == 1 else 'hours'} ago"
+            else:
+                minutes = time_difference.seconds // 60
+                return f"{minutes} {'minute' if minutes == 1 else 'minutes'} ago"
 
 class ConversationMessage(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -28,17 +31,14 @@ class ConversationMessage(models.Model):
     created_by = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
 
     def created_at_formatted(self):
-        time_difference = now() - self.created_at
-        days = time_difference.days
-        hours, remainder = divmod(time_difference.seconds, 3600)
-        minutes = remainder // 60
+            time_difference = now() - self.created_at
+            days = time_difference.days
+            hours, _ = divmod(time_difference.seconds, 3600)
 
-        if days > 0:
-            # If more than a day, show days and remaining hours
-            return f"{days} {'day' if days == 1 else 'days'} and {hours} {'hour' if hours == 1 else 'hours'} ago"
-        elif hours > 0:
-            # If less than a day but more than an hour, show hours and minutes
-            return f"{hours} {'hour' if hours == 1 else 'hours'} and {minutes} {'minute' if minutes == 1 else 'minutes'} ago"
-        else:
-            # If less than an hour, show minutes only
-            return f"{minutes} {'minute' if minutes == 1 else 'minutes'} ago"
+            if days > 0:
+                return f"{days} {'day' if days == 1 else 'days'} ago"
+            elif hours > 0:
+                return f"{hours} {'hour' if hours == 1 else 'hours'} ago"
+            else:
+                minutes = time_difference.seconds // 60
+                return f"{minutes} {'minute' if minutes == 1 else 'minutes'} ago"

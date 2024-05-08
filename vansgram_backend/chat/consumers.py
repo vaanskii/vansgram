@@ -24,26 +24,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-    # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message_body = text_data_json['body']
         conversation_id = text_data_json['conversationId']
         user_id = text_data_json['created_by']['id']
 
-        # Save the message to the database
         message_obj = await self.save_message(conversation_id, user_id, message_body)
 
-        # Prepare the message data for broadcasting
         message_data = {
             'id': str(message_obj.id),
             'conversationId': conversation_id,
             'body': message_body,
             'created_by': {
                 'id': user_id,
-                'get_avatar': message_obj.created_by.get_avatar()  # Use the get_avatar method from your User model
+                'get_avatar': message_obj.created_by.get_avatar()
             },
-            'created_at_formatted': message_obj.created_at_formatted()  # Use the created_at_formatted method from your ConversationMessage model
+            'created_at_formatted': message_obj.created_at_formatted()
         }
 
         # Send message to room group

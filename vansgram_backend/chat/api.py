@@ -1,13 +1,16 @@
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from account.models import User
+from django.db.models import Max
 
 from .models import Conversation, ConversationMessage
 from .serializers import ConversationDetailSerializer, ConversationSerializer, ConversationMessageSerializer
 
 @api_view(['GET'])
 def conversation_list(request):
-    conversations = Conversation.objects.filter(users__in=list([request.user]))
+    conversations = Conversation.objects.filter(users__in=[request.user])
+    conversations = conversations.annotate(last_message_at=Max('messages__created_at'))
+    conversations = conversations.order_by('-last_message_at')
     serializer = ConversationSerializer(conversations, many=True)
 
     return JsonResponse(serializer.data, safe=False)
@@ -55,3 +58,4 @@ def conversation_send_message(request, pk):
     serializer = ConversationMessageSerializer(conversation_message)
     
     return JsonResponse(serializer.data, safe=False)
+
