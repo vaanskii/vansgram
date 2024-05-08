@@ -26,7 +26,11 @@
                     >
                       {{ user.name }} 
                     </p>
+                    
                   </template>
+                </div>
+                <div class="mr-5" v-if="conversation.newMessagesCount > 0" @click="conversation.newMessagesCount = 0">
+                  <p>{{ conversation.newMessagesCount }}</p>
                 </div>
               </div>
             </div>
@@ -113,7 +117,6 @@ data() {
     body: '',
     loading: true,
     socket: null,
-    status: 'disconnected'
   };
 },
 
@@ -151,30 +154,46 @@ methods: {
     }
   },
   getConversations() {
-    this.loading = true;
-    axios
-      .get('/api/chat/')
-      .then(response => {
-        this.conversations = response.data.sort((a, b) => {
-          const lastMessageATime = a.last_message_at ? new Date(a.last_message_at).getTime() : 0;
-          const lastMessageBTime = b.last_message_at ? new Date(b.last_message_at).getTime() : 0;
-          return lastMessageBTime - lastMessageATime;
-        });
-        this.loading = false;
-        this.setActiveConversationFromRoute();
-      })
-      .catch(error => {
-        this.loading = false;
-        console.error('error', error);
+  this.loading = true;
+  axios
+    .get('/api/chat/')
+    .then(response => {
+      this.conversations = response.data.map(convo => ({
+        ...convo,
+        newMessagesCount: convo.unread_messages_count,
+      })).sort((a, b) => {
+        const lastMessageATime = a.last_message_at ? new Date(a.last_message_at).getTime() : 0;
+        const lastMessageBTime = b.last_message_at ? new Date(b.last_message_at).getTime() : 0;
+        return lastMessageBTime - lastMessageATime;
       });
-  },
+      this.loading = false;
+      this.setActiveConversationFromRoute();
+    })
+    .catch(error => {
+      this.loading = false;
+      console.error('error', error);
+    });
+},
   setActiveConversation(conversationId) {
     const conversation = this.conversations.find(convo => convo.id === conversationId);
     if (conversation) {
       this.activeConversation = conversation;
       this.$router.push({ name: 'chat', params: { id: conversationId } });
       this.getMessages();
+      this.markMessagesAsRead(conversationId);
     }
+  },
+  markMessagesAsRead(conversationId) {
+    axios.post(`/api/chat/${conversationId}/mark-as-read/`)
+      .then(() => {
+        const conversation = this.conversations.find(convo => convo.id === conversationId);
+        if (conversation) {
+          conversation.unread_messages_count = 0; // Reset the unread messages count
+        }
+      })
+      .catch(error => {
+        console.error('Error marking messages as read:', error);
+      });
   },
   connectToWebSocket(conversationId) {
     if (this.socket) {
@@ -183,8 +202,7 @@ methods: {
     if (conversationId) {
       this.socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${conversationId}/`);
       this.socket.onopen = function(e) {
-        console.log('WebSocket connection established')
-        this.status = 'connected'
+        // console.log('WebSocket connection established')
       };
       this.socket.onmessage = (event) => {
         const receivedMessage = JSON.parse(event.data);
@@ -205,11 +223,7 @@ methods: {
         }
       };
       this.socket.onclose = (event) => {
-        this.status = 'disconnected';
-        console.log('WebSocket disconnected. Attempting to reconnect...');
-        setTimeout(() => {
-          this.connectToWebSocket();
-        }, 1000);
+        // console.log('WebSocket disconnected. Attempting to reconnect...');
       };
     }
   },

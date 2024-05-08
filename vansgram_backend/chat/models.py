@@ -28,17 +28,21 @@ class ConversationMessage(models.Model):
     body = models.TextField()
     sent_to = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add = True)
+    is_read = models.BooleanField(default=False)
     created_by = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
 
     def created_at_formatted(self):
-            time_difference = now() - self.created_at
-            days = time_difference.days
-            hours, _ = divmod(time_difference.seconds, 3600)
+        time_difference = now() - self.created_at
+        days = time_difference.days
+        hours, remainder = divmod(time_difference.seconds, 3600)
+        minutes = remainder // 60
+        seconds = remainder % 60
 
-            if days > 0:
-                return f"{days} {'day' if days == 1 else 'days'} ago"
-            elif hours > 0:
-                return f"{hours} {'hour' if hours == 1 else 'hours'} ago"
-            else:
-                minutes = time_difference.seconds // 60
-                return f"{minutes} {'minute' if minutes == 1 else 'minutes'} ago"
+        if days > 0:
+            return f"{days} {'day' if days == 1 else 'days'} ago"
+        elif hours > 0:
+            return f"{hours} {'hour' if hours == 1 else 'hours'} ago"
+        elif minutes > 0:
+            return f"{minutes} {'minute' if minutes == 1 else 'minutes'} ago"
+        elif seconds < 60:
+            return "just now"

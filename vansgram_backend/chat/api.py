@@ -11,7 +11,12 @@ def conversation_list(request):
     conversations = Conversation.objects.filter(users__in=[request.user])
     conversations = conversations.annotate(last_message_at=Max('messages__created_at'))
     conversations = conversations.order_by('-last_message_at')
-    serializer = ConversationSerializer(conversations, many=True)
+
+    # Calculate the count of unread messages for each conversation
+    for conversation in conversations:
+        conversation.unread_messages_count = conversation.messages.filter(sent_to=request.user, is_read=False).count()
+
+    serializer = ConversationSerializer(conversations, many=True, context={'request': request})
 
     return JsonResponse(serializer.data, safe=False)
 
@@ -59,3 +64,11 @@ def conversation_send_message(request, pk):
     
     return JsonResponse(serializer.data, safe=False)
 
+
+@api_view(['POST'])
+def mark_messages_as_read(request, pk):
+    conversation = Conversation.objects.get(pk=pk, users__in=[request.user])
+    messages = conversation.messages.filter(sent_to=request.user, is_read=False)
+    count = messages.update(is_read=True)
+    
+    return JsonResponse({'marked_as_read': count}, safe=False)
