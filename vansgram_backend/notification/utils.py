@@ -39,3 +39,4 @@ def create_notification(request, type_of_notification, post_id=None, friendreque
     )
 
     return notification
+

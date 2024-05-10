@@ -114,22 +114,22 @@ def editpassword(request):
         return JsonResponse({'message': 'success'})
     else:
         return JsonResponse({'message': form.errors.as_json()}, safe=False)
+    
 
 @api_view(['POST'])
 def send_friendship_request(request, pk):
     user = User.objects.get(pk=pk)
 
-    check1 = FriendshipRequest.objects.filter(created_for=request.user).filter(created_by=user)
-    check2 = FriendshipRequest.objects.filter(created_for=user).filter(created_by=request.user)
+    check1 = FriendshipRequest.objects.filter(created_for=request.user, created_by=user).exists()
+    check2 = FriendshipRequest.objects.filter(created_for=user, created_by=request.user).exists()
 
-    if not check1 or not check2:
+    if not check1 and not check2:
         friendrequest = FriendshipRequest.objects.create(created_for=user, created_by=request.user)
-
         notification = create_notification(request, 'new_friendrequest', friendrequest_id=friendrequest.id)
-
         return JsonResponse({'message': 'friendship request created'})
     else:
-        return JsonResponse({'message': 'request already sent'})
+        friendrequest = FriendshipRequest.objects.filter(created_for=user, created_by=request.user).delete()
+        return JsonResponse({'message': 'friendship request removed'}, safe=False)
 
 
 @api_view(['POST'])

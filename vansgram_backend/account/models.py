@@ -78,3 +78,4 @@ class FriendshipRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_friendshiprequests', on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=SENT)
+    request_sent = models.BooleanField(default=False)

@@ -129,7 +129,7 @@ export default {
         return {
             posts : [],
             user: {
-                id: ''
+                id: '',
             },
             body: '',
             is_private: false,
@@ -176,8 +176,8 @@ export default {
             axios
                 .post(`/api/friends/${this.$route.params.id}/request/`)
                 .then(response => {
-                    if (response.data.message == 'request already sent') {
-                        this.toastStore.showToast(5000, 'The request already been sent!', 'bg-red-300')
+                    if (response.data.message == 'friendship request removed') {
+                        this.toastStore.showToast(5000, 'The request removed', 'bg-red-300')
                     }else {
                         this.toastStore.showToast(5000, 'The request was sent!', 'bg-emerald-300')
                     }
