@@ -1,0 +1,2 @@
+celery -A vansgram_backend.celery worker --pool=solo -l info
+celery -A vansgram_backend beat -l INFO
