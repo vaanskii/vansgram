@@ -15,9 +15,7 @@ ALLOWED_HOSTS = ['*']
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 AUTH_USER_MODEL = "account.User"
-
 WEBSITE_URL = os.environ.get('WEBSITE_URL')
-
 
 
 # Application definition
