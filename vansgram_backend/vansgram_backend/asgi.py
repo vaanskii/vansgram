@@ -8,7 +8,6 @@ from django.core.asgi import get_asgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vansgram_backend.settings')
 
 from chat import routing as chat_routing
-from notification import routing as notification_routing
 
 django_asgi_application = get_asgi_application()
 
@@ -16,8 +15,7 @@ application = ProtocolTypeRouter({
     'http': django_asgi_application,
     'websocket': AllowedHostsOriginValidator(
         AuthMiddlewareStack(URLRouter(
-            chat_routing.websocket_urlpatterns + 
-            notification_routing.websocket_urlpatterns
+            chat_routing.websocket_urlpatterns
             )
         )
     )
