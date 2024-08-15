@@ -1,2 +1,2 @@
-celery -A vansgram_backend.celery worker --pool=solo -l info
-celery -A vansgram_backend beat -l INFO
+cd vansgram_backend && celery -A vansgram_backend.vansgram_backend.celery worker --pool=solo -l info
+cd vansgram_backend && celery -A vansgram_backend.vansgram_backend beat -l INFO
